@@ -1,0 +1,19 @@
+{
+  "event_name": "Tech Summit 2026",
+  "ticket_types": [
+    { "id": 1, "ticket_name": "General", "ticket_code": "GENERAL", "price": "0.00",
+      "total_quantity": 500, "available_quantity": 462, "sold_quantity": 38,
+      "sale_start_time": "2026-10-01T00:00:00+07:00", "sale_end_time": "2026-12-01T00:00:00+07:00",
+      "description": "Vào cửa khu triển lãm" },
+    { "id": 2, "ticket_name": "VIP", "ticket_code": "VIP", "price": "0.00",
+      "total_quantity": 50, "available_quantity": 0, "sold_quantity": 50,
+      "sale_start_time": "2026-10-01T00:00:00+07:00", "sale_end_time": "2026-12-01T00:00:00+07:00",
+      "description": "Chỗ ngồi hàng đầu" }
+  ],
+  "sessions": [
+    { "id": 1, "name": "Ngày 1", "session_code": "D1", "start_time": "2026-12-10T08:00:00+07:00",
+      "end_time": "2026-12-10T17:00:00+07:00", "description": null },
+    { "id": 2, "name": "Ngày 2", "session_code": "D2", "start_time": "2026-12-11T08:00:00+07:00",
+      "end_time": "2026-12-11T17:00:00+07:00", "description": null }
+  ]
+}

@@ -1,0 +1,155 @@
+{
+  "name": "Template Internet Day",
+  "version": "1.0.0",
+  "author": "San",
+  "language": ["vi", "en"],
+  "defaultData": {
+    "customCSS": "",
+    "metadata": {
+      "title": { "vi": "Đăng ký tham dự Internet Day 2026", "en": "Register for Internet Day 2026" },
+      "description": {
+        "vi": "Đăng ký miễn phí và nhận mã vé tham dự Internet Day 2026.",
+        "en": "Register for free and get your ticket code for Internet Day 2026."
+      },
+      "icon": "/favicon.svg"
+    },
+    "Theme": {
+      "primaryColor": "#15803d",
+      "accentColor": "#0ea5e9",
+      "backgroundColor": "#071c33"
+    },
+    "Hero": {
+      "bannerDesktop": "/images/banner-desktop.jpg",
+      "bannerMobile": "/images/banner-mobile.jpg",
+      "logo": "/images/logo.png",
+      "tagline": {
+        "vi": "Từ Internet an toàn đến tương lai số tin cậy",
+        "en": "From Safer Internet to Trusted Digital Future"
+      },
+      "title": { "vi": "Internet Day 2026", "en": "Internet Day 2026" },
+      "time": { "vi": "08:00 – 17:00, ngày 10 – 11/12/2026", "en": "08:00 – 17:00, December 10 – 11, 2026" },
+      "location": { "vi": "Trung tâm Hội nghị Quốc gia, Hà Nội", "en": "National Convention Center, Hanoi" },
+      "description": {
+        "vi": "Sự kiện thường niên quy tụ cơ quan quản lý, doanh nghiệp và chuyên gia công nghệ để bàn về hạ tầng số, an toàn thông tin và tương lai của Internet Việt Nam.",
+        "en": "The annual gathering of regulators, businesses and technology experts to discuss digital infrastructure, cyber security and the future of the Internet in Vietnam."
+      }
+    },
+    "Agenda": [
+      { "time": "08:00", "label": { "vi": "Đón khách và check-in", "en": "Welcome and check-in" } },
+      { "time": "09:00", "label": { "vi": "Khai mạc", "en": "Opening ceremony" } },
+      { "time": "10:00", "label": { "vi": "Hạ tầng 5G & Cloud", "en": "5G & Cloud infrastructure" } },
+      { "time": "13:30", "label": { "vi": "An toàn thông tin và AI tin cậy", "en": "Cyber security and trustworthy AI" } },
+      { "time": "16:30", "label": { "vi": "Bế mạc", "en": "Closing" } }
+    ],
+    "Form": {
+      "showDiscount": true,
+      "showCompany": true,
+      "showPosition": true,
+      "termsText": {
+        "vi": "Tôi đồng ý với điều khoản tham dự và cho phép ban tổ chức dùng thông tin này để gửi vé, thông báo về sự kiện.",
+        "en": "I agree to the attendance terms and allow the organizer to use this information to send my ticket and event updates."
+      },
+      "termsUrl": ""
+    },
+    "Confirmation": {
+      "thankYouTitle": { "vi": "Cảm ơn bạn đã đăng ký!", "en": "Thank you for registering!" },
+      "thankYouMessage": {
+        "vi": "Vui lòng xuất trình mã vé hoặc mã QR tại quầy check-in vào ngày diễn ra sự kiện.",
+        "en": "Please show your ticket code or QR code at the check-in desk on the event day."
+      }
+    },
+    "Organizer": {
+      "name": { "vi": "Hiệp hội Internet Việt Nam (VIA)", "en": "Vietnam Internet Association (VIA)" },
+      "contactEmail": "contact@internetday.example",
+      "hotline": "1900 0000"
+    }
+  },
+  "editable": {
+    "customCSS": { "type": "code", "language": "css", "label": "Custom CSS" },
+    "metadata": {
+      "type": "block", "label": "SEO",
+      "fields": {
+        "title": { "type": "block", "label": "Page title", "fields": {
+          "vi": { "type": "text", "label": "Vietnamese", "maxLength": 100, "required": true },
+          "en": { "type": "text", "label": "English", "maxLength": 100, "required": true } } },
+        "description": { "type": "block", "label": "Page description", "fields": {
+          "vi": { "type": "textarea", "label": "Vietnamese", "maxLength": 300 },
+          "en": { "type": "textarea", "label": "English", "maxLength": 300 } } },
+        "icon": { "type": "image", "label": "Favicon", "accept": "image/png,image/x-icon,image/svg+xml" }
+      }
+    },
+    "Theme": {
+      "type": "block", "label": "Colors",
+      "fields": {
+        "primaryColor": { "type": "color", "label": "Primary color (buttons, highlights)" },
+        "accentColor": { "type": "color", "label": "Accent color" },
+        "backgroundColor": { "type": "color", "label": "Background color" }
+      }
+    },
+    "Hero": {
+      "type": "block", "label": "Hero",
+      "fields": {
+        "bannerDesktop": { "type": "image", "label": "Banner image – desktop (2000 × 860)", "accept": "image/png,image/jpeg,image/webp" },
+        "bannerMobile": { "type": "image", "label": "Banner image – mobile (860 × 1300)", "accept": "image/png,image/jpeg,image/webp" },
+        "logo": { "type": "image", "label": "Logo", "accept": "image/png,image/jpeg,image/webp,image/svg+xml" },
+        "tagline": { "type": "block", "label": "Tagline", "fields": {
+          "vi": { "type": "text", "label": "Vietnamese", "maxLength": 120 },
+          "en": { "type": "text", "label": "English", "maxLength": 120 } } },
+        "title": { "type": "block", "label": "Event title", "fields": {
+          "vi": { "type": "text", "label": "Vietnamese", "maxLength": 150, "required": true },
+          "en": { "type": "text", "label": "English", "maxLength": 150, "required": true } } },
+        "time": { "type": "block", "label": "Time", "fields": {
+          "vi": { "type": "text", "label": "Vietnamese", "maxLength": 120, "required": true },
+          "en": { "type": "text", "label": "English", "maxLength": 120, "required": true } } },
+        "location": { "type": "block", "label": "Location", "fields": {
+          "vi": { "type": "text", "label": "Vietnamese", "maxLength": 200, "required": true },
+          "en": { "type": "text", "label": "English", "maxLength": 200, "required": true } } },
+        "description": { "type": "block", "label": "Short description", "fields": {
+          "vi": { "type": "textarea", "label": "Vietnamese", "maxLength": 600 },
+          "en": { "type": "textarea", "label": "English", "maxLength": 600 } } }
+      }
+    },
+    "Agenda": {
+      "type": "repeater", "label": "Agenda",
+      "fields": {
+        "time": { "type": "text", "label": "Time", "maxLength": 20, "placeholder": "08:00" },
+        "label": { "type": "block", "label": "Label", "fields": {
+          "vi": { "type": "text", "label": "Vietnamese", "maxLength": 100 },
+          "en": { "type": "text", "label": "English", "maxLength": 100 } } }
+      }
+    },
+    "Form": {
+      "type": "block", "label": "Registration form",
+      "fields": {
+        "showDiscount": { "type": "toggle", "label": "Show discount code field" },
+        "showCompany": { "type": "toggle", "label": "Show company field" },
+        "showPosition": { "type": "toggle", "label": "Show job title field" },
+        "termsText": { "type": "block", "label": "Terms text", "fields": {
+          "vi": { "type": "textarea", "label": "Vietnamese", "maxLength": 1000, "required": true },
+          "en": { "type": "textarea", "label": "English", "maxLength": 1000, "required": true } } },
+        "termsUrl": { "type": "url", "label": "Full terms link (optional)" }
+      }
+    },
+    "Confirmation": {
+      "type": "block", "label": "Confirmation screen",
+      "fields": {
+        "thankYouTitle": { "type": "block", "label": "Thank-you title", "fields": {
+          "vi": { "type": "text", "label": "Vietnamese", "maxLength": 120, "required": true },
+          "en": { "type": "text", "label": "English", "maxLength": 120, "required": true } } },
+        "thankYouMessage": { "type": "block", "label": "Thank-you message", "fields": {
+          "vi": { "type": "textarea", "label": "Vietnamese", "maxLength": 500 },
+          "en": { "type": "textarea", "label": "English", "maxLength": 500 } } }
+      }
+    },
+    "Organizer": {
+      "type": "block", "label": "Organizer",
+      "fields": {
+        "name": { "type": "block", "label": "Organizer name", "fields": {
+          "vi": { "type": "text", "label": "Vietnamese", "maxLength": 150 },
+          "en": { "type": "text", "label": "English", "maxLength": 150 } } },
+        "contactEmail": { "type": "email", "label": "Contact email" },
+        "hotline": { "type": "tel", "label": "Hotline" }
+      }
+    }
+  }
+}
