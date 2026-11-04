@@ -66,6 +66,18 @@ function compare(value, node, path) {
   if (node.type === 'image' && typeof value === 'string' && !value) fail(`defaultData${path} image is empty`);
   if (node.type === 'color' && !/^#[0-9a-f]{3}([0-9a-f]{3})?$/i.test(value)) fail(`defaultData${path} is not a hex color`);
   if (node.type === 'toggle' && typeof value !== 'boolean') fail(`defaultData${path} must be true/false`);
+  if (node.type === 'number') {
+    if (typeof value !== 'number') fail(`defaultData${path} must be a number`);
+    else if ((node.min !== undefined && value < node.min) || (node.max !== undefined && value > node.max)) {
+      fail(`defaultData${path} is outside min/max`);
+    }
+  }
+  if (node.type === 'select') {
+    const values = Array.isArray(node.options) ? node.options.map((o) => o.value) : [];
+    if (values.length === 0) fail(`editable${path}.options is missing`);
+    if (!values.includes(value)) fail(`defaultData${path} "${value}" is not one of the options`);
+    if (node.default !== undefined && !values.includes(node.default)) fail(`editable${path}.default is not an option`);
+  }
   if (node.type === 'code' && path === '.customCSS' && node.language !== 'css') fail('customCSS must declare language "css"');
 }
 

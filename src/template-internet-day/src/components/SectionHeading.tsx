@@ -11,10 +11,10 @@ interface SectionHeadingProps {
 export function SectionHeading({ step, title, as = 'h2', aside }: SectionHeadingProps) {
   const Tag = as;
   return (
-    <Tag className="mb-4 flex w-full items-center gap-3 text-lg font-bold text-slate-900 sm:text-xl">
+    <Tag className="mb-4 flex w-full items-center gap-3 text-lg font-bold text-(--er-on-surface) sm:text-xl">
       <span
         aria-hidden="true"
-        className="flex size-8 shrink-0 items-center justify-center rounded-full bg-(--er-ink) text-sm font-bold text-white"
+        className="flex size-8 shrink-0 items-center justify-center rounded-full bg-(--er-ink) text-sm font-bold text-(--er-on-ink)"
       >
         {step}
       </span>

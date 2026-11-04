@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Check, CheckCircle2, Copy, Mail, RotateCcw } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { COPY_FEEDBACK_MS } from '../config';
 import type { Dictionary } from '../i18n';
 import type { RegistrationResult } from '../types';
 
@@ -41,7 +42,7 @@ export function Confirmation({ t, title, message, logo, logoAlt, data, snapshot,
 
   useEffect(() => {
     if (!copiedCode) return undefined;
-    const timer = window.setTimeout(() => setCopiedCode(null), 2000);
+    const timer = window.setTimeout(() => setCopiedCode(null), COPY_FEEDBACK_MS);
     return () => window.clearTimeout(timer);
   }, [copiedCode]);
 
@@ -67,7 +68,7 @@ export function Confirmation({ t, title, message, logo, logoAlt, data, snapshot,
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: 'easeOut' }}
       aria-labelledby="er-confirm-heading"
-      className="mx-auto max-w-3xl overflow-hidden rounded-3xl bg-white text-slate-900 shadow-2xl shadow-black/30"
+      className="mx-auto max-w-3xl overflow-hidden rounded-(--er-radius-card) bg-(--er-surface) text-(--er-on-surface) shadow-2xl shadow-black/30"
     >
       <div className="bg-(--er-bg) px-5 py-8 text-center text-(--er-on-bg) sm:px-10">
         {logo && !logoFailed && (
@@ -94,17 +95,17 @@ export function Confirmation({ t, title, message, logo, logoAlt, data, snapshot,
         <div className="min-w-0">
           {ticketCodes.length > 0 && (
             <div className="mb-6">
-              <p className="text-sm font-semibold text-slate-600">{t.confirmTicketCode}</p>
+              <p className="text-sm font-semibold text-(--er-muted)">{t.confirmTicketCode}</p>
               <ul className="mt-2 grid gap-2">
                 {ticketCodes.map((code) => (
                   <li key={code} className="flex flex-wrap items-center gap-3">
-                    <span className="rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 px-4 py-2 font-mono text-2xl font-bold tracking-wider break-all">
+                    <span className="rounded-(--er-radius) border-2 border-dashed border-(--er-border-strong) bg-(--er-subtle) px-4 py-2 font-mono text-2xl font-bold tracking-wider break-all">
                       {code}
                     </span>
                     <button
                       type="button"
                       onClick={() => copy(code)}
-                      className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100 focus:outline-none focus-visible:ring-4 focus-visible:ring-(--er-ring)"
+                      className="inline-flex items-center gap-1.5 rounded-(--er-radius) px-3 py-2 text-sm font-semibold text-(--er-on-surface) hover:bg-(--er-subtle) focus:outline-none focus-visible:ring-4 focus-visible:ring-(--er-ring)"
                     >
                       {copiedCode === code ? (
                         <Check className="size-4" aria-hidden="true" />
@@ -119,17 +120,17 @@ export function Confirmation({ t, title, message, logo, logoAlt, data, snapshot,
             </div>
           )}
 
-          <h3 className="text-sm font-semibold text-slate-600">{t.confirmRegistered}</h3>
-          <dl className="mt-2 divide-y divide-slate-200 text-sm">
+          <h3 className="text-sm font-semibold text-(--er-muted)">{t.confirmRegistered}</h3>
+          <dl className="mt-2 divide-y divide-(--er-border) text-sm">
             {details.map((row) => (
               <div key={row.label} className="flex justify-between gap-4 py-2">
-                <dt className="text-slate-600">{row.label}</dt>
+                <dt className="text-(--er-muted)">{row.label}</dt>
                 <dd className="text-right font-semibold [overflow-wrap:anywhere]">{row.value}</dd>
               </div>
             ))}
           </dl>
 
-          <p className="mt-6 flex items-start gap-2 rounded-xl bg-emerald-50 p-4 text-sm font-medium text-emerald-950 ring-1 ring-emerald-200">
+          <p className="mt-6 flex items-start gap-2 rounded-(--er-radius) bg-(--er-success-bg) p-4 text-sm font-medium text-(--er-success) ring-1 ring-(--er-success-border)">
             <Mail className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
             <span className="[overflow-wrap:anywhere]">{t.confirmEmailSent(snapshot.email)}</span>
           </p>
@@ -139,7 +140,7 @@ export function Confirmation({ t, title, message, logo, logoAlt, data, snapshot,
           <div className="flex flex-wrap justify-center gap-4 md:flex-col md:justify-start">
             {qrUrls.map((url, i) =>
               url && !failedQr[i] ? (
-                <figure key={`${url}-${i}`} className="rounded-2xl border border-slate-200 p-3">
+                <figure key={`${url}-${i}`} className="rounded-(--er-radius-card) border border-(--er-border) p-3">
                   <img
                     src={url}
                     alt={t.confirmQrAlt(ticketCodes[i] ?? '')}
@@ -149,7 +150,7 @@ export function Confirmation({ t, title, message, logo, logoAlt, data, snapshot,
                     onError={() => setFailedQr((prev) => ({ ...prev, [i]: true }))}
                   />
                   {ticketCodes[i] && (
-                    <figcaption className="mt-2 text-center font-mono text-xs text-slate-600">{ticketCodes[i]}</figcaption>
+                    <figcaption className="mt-2 text-center font-mono text-xs text-(--er-muted)">{ticketCodes[i]}</figcaption>
                   )}
                 </figure>
               ) : null,
@@ -158,11 +159,11 @@ export function Confirmation({ t, title, message, logo, logoAlt, data, snapshot,
         )}
       </div>
 
-      <div className="border-t border-slate-200 px-5 py-5 sm:px-10">
+      <div className="border-t border-(--er-border) px-5 py-5 sm:px-10">
         <button
           type="button"
           onClick={onRegisterAgain}
-          className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border-2 border-(--er-ink) px-6 font-bold text-(--er-ink) transition hover:bg-slate-100 focus:outline-none focus-visible:ring-4 focus-visible:ring-(--er-ring) sm:w-auto"
+          className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-(--er-radius) border-2 border-(--er-ink) px-6 font-bold text-(--er-ink) transition hover:bg-(--er-subtle) focus:outline-none focus-visible:ring-4 focus-visible:ring-(--er-ring) sm:w-auto"
         >
           <RotateCcw className="size-5" aria-hidden="true" />
           {t.registerAgain}

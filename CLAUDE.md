@@ -41,6 +41,7 @@ node scripts/screenshots.mjs http://localhost:5173/   # chụp lại docs/*.png 
 - Cây khoá của `editable` phải giống hệt `defaultData`. Field con nằm trong `fields`, cả với `block` lẫn `repeater`.
 - Chỉ dùng các kiểu field: `block`, `text`, `textarea`, `number`, `toggle`, `select`, `color`, `image`, `url`, `email`, `tel`, `code`, `repeater`.
 - Chữ song ngữ khai báo là `block` có 2 field con `vi` và `en`. `label` trong `editable` viết bằng tiếng Anh.
+- Kiểu `select` cần có `options` và `default`. Kiểu `number` nên có `min`/`max`. `scripts/check-schema.mjs` kiểm tra cả hai.
 - Khi thêm hay đổi trường, sửa cùng lúc 3 chỗ:
   1. `defaultData`;
   2. `editable`;
@@ -50,14 +51,21 @@ node scripts/screenshots.mjs http://localhost:5173/   # chụp lại docs/*.png 
 
 ## Kiến trúc nhanh
 
-- **`index.tsx`:** có `'use client'` và export default, chỉ bọc `App`.
-- **`src/App.tsx`:** giữ toàn bộ state, validate form, gọi API, chuyển giữa form và màn xác nhận.
-  - Lỗi form lưu dưới dạng *khoá dịch*, nên tự đổi ngôn ngữ theo trang.
+Ưu tiên mở rộng, hạn chế tối đa viết cứng. Mỗi loại thay đổi có một chỗ duy nhất (bảng chi tiết ở mục "Mở rộng" trong README):
+
+- **Nội dung theo sự kiện:** `schema.json`.
+- **Quy tắc chung:** `src/config.ts` (regex, số lượng vé, locale, preset bo góc và bố cục).
+- **Nhãn giao diện:** `src/i18n.ts`.
+- **Ô nhập:** `ATTENDEE_FIELDS` trong `src/formFields.ts`. Từ mảng này suy ra cách render, validate, thứ tự focus và payload `register` (`issuerKey`, `holderKey`).
+- **`src/lib/content.ts`:** `resolveContent` duyệt `editable` của schema để làm sạch content: `select` phải nằm trong `options`, `number` bị kẹp theo `min`/`max`, `color` phải là hex, `url`/`image` bị chặn scheme lạ, trường thiếu lấy giá trị mặc định. Thêm trường vào schema thì không cần sửa file này.
+- **`src/lib/theme.ts`:** chuyển khối `Theme` thành biến CSS `--er-*`.
+  - Component **chỉ** dùng các biến này, không dùng `bg-white`, `slate-*`, `red-*` hay `rounded-xl`.
+  - Các biến chính: `--er-surface`, `--er-on-surface`, `--er-muted`, `--er-border`, `--er-subtle`, `--er-ink`, `--er-primary-text`, `--er-radius`, `--er-radius-card`.
+  - Màu trạng thái có dạng `--er-{danger|success|info|warning}` cùng các biến `-bg` và `-border`.
+- **`src/App.tsx`:** chỉ ghép các phần. Mảng `sections` có cờ `visible`, số bước được đánh tự động.
   - `submittingRef` chặn gọi `register` hai lần.
-  - `discountRequestRef` bỏ qua response cũ của `checkDiscount`.
-  - Đổi mã ưu đãi hoặc đổi loại vé thì bỏ mã đã áp.
-- **`src/utils.ts`:** `resolveContent` trộn content nhận vào với `schema.json`, giữ trường mặc định khi thiếu hoặc sai kiểu, và loại màu hex hỏng. Nhờ vậy content thiếu không làm vỡ trang.
-- **Màu chủ đề:** đi qua CSS variable `--er-primary`, `--er-on-primary`, `--er-bg`, `--er-on-bg`, `--er-ink`, `--er-ring`, `--er-accent`. Dùng các biến này, ví dụ `bg-(--er-primary)`, thay vì viết cứng màu hay `text-white` trên nền chủ đề. Màu chữ trên nút và nền tự chọn đen hoặc trắng theo độ tương phản.
+  - Validate kiểm tra cả vé hay ngày đã chọn có còn hợp lệ không, qua `selectableTickets` và `sessionCodes`.
+- **Hooks:** `useRegistrationForm` giữ giá trị và lỗi. Lỗi lưu dạng khoá i18n nên tự dịch khi đổi ngôn ngữ. `useDiscount` xử lý mã ưu đãi: đổi mã hay đổi vé thì bỏ mã đã áp, response cũ bị bỏ qua.
 
 ## Kiểm thử thủ công
 
@@ -65,7 +73,7 @@ Mở mục **Demo options** trên trang demo:
 
 - bật/tắt `isPreview`;
 - đổi `serverData` giữa: mặc định, 1 ngày, có vé trả phí, không có dữ liệu;
-- bật content hỏng;
+- đổi `content` giữa: `schema.json`, giao diện khác (thẻ nền tối, góc vuông, banner xếp chồng), content hỏng;
 - xem số lần `register()` được gọi và request gần nhất.
 
 Tình huống mock theo email: email bắt đầu bằng `trung`, `hetve`, `nhanh` hoặc `matmang` trả lỗi; email khác thì thành công. Với mã ưu đãi, `SALE10` giảm 10%, mã khác báo lỗi.

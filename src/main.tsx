@@ -30,6 +30,15 @@ const SERVER_VARIANTS: Record<'default' | 'single' | 'paid' | 'none', ServerData
 }
 type ServerVariant = keyof typeof SERVER_VARIANTS
 
+/** Same content with another look, to check that layout and colors are driven by schema fields. */
+const altThemeContent: { defaultData: RegistrationContent } = {
+  defaultData: {
+    ...schema.defaultData,
+    Theme: { ...schema.defaultData.Theme, primaryColor: '#f59e0b', surfaceColor: '#0f2a47', radius: 'none' },
+    Hero: { ...schema.defaultData.Hero, layout: 'stacked' },
+  },
+}
+
 /** Content with several fields removed or broken, to check the fallbacks. */
 const partialContent = {
   defaultData: {
@@ -43,7 +52,7 @@ function Demo() {
   const [lang, setLang] = useState<Language>('vi')
   const [isPreview, setIsPreview] = useState(false)
   const [serverVariant, setServerVariant] = useState<ServerVariant>('default')
-  const [partial, setPartial] = useState(false)
+  const [contentVariant, setContentVariant] = useState<'schema' | 'alt' | 'partial'>('schema')
   const [calls, setCalls] = useState<MockApiCall[]>([])
 
   const langRef = useRef(lang)
@@ -112,8 +121,16 @@ function Demo() {
               </select>
             </label>
             <label className="flex items-center gap-2">
-              <input type="checkbox" checked={partial} onChange={(e) => setPartial(e.target.checked)} />
-              partial / broken content
+              content
+              <select
+                value={contentVariant}
+                onChange={(e) => setContentVariant(e.target.value as typeof contentVariant)}
+                className="rounded bg-white px-2 py-1 text-slate-900"
+              >
+                <option value="schema">schema.json</option>
+                <option value="alt">alternative theme</option>
+                <option value="partial">partial / broken</option>
+              </select>
             </label>
           </div>
           {lastRegister && (
@@ -125,7 +142,13 @@ function Demo() {
       </div>
 
       <Template
-        content={partial ? partialContent : { defaultData: schema.defaultData }}
+        content={
+          contentVariant === 'alt'
+            ? altThemeContent
+            : contentVariant === 'partial'
+              ? partialContent
+              : { defaultData: schema.defaultData }
+        }
         language={lang}
         serverData={SERVER_VARIANTS[serverVariant]}
         isPreview={isPreview}

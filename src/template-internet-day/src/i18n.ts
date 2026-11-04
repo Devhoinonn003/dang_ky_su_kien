@@ -88,6 +88,9 @@ const vi = {
 
 export type Dictionary = typeof vi;
 
+/** Keys whose value is a plain string (usable as label / error keys in config). */
+export type TextKey = { [K in keyof Dictionary]: Dictionary[K] extends string ? K : never }[keyof Dictionary];
+
 const en: Dictionary = {
   langName: 'English',
   skipToForm: 'Skip to registration form',

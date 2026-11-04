@@ -16,9 +16,14 @@
     "Theme": {
       "primaryColor": "#15803d",
       "accentColor": "#0ea5e9",
-      "backgroundColor": "#071c33"
+      "backgroundColor": "#071c33",
+      "surfaceColor": "#ffffff",
+      "radius": "medium"
     },
     "Hero": {
+      "layout": "overlay",
+      "overlayOffsetMobile": 36,
+      "overlayOffsetDesktop": 12,
       "bannerDesktop": "/images/banner-desktop.jpg",
       "bannerMobile": "/images/banner-mobile.jpg",
       "logo": "/images/logo.png",
@@ -83,12 +88,31 @@
       "fields": {
         "primaryColor": { "type": "color", "label": "Primary color (buttons, highlights)" },
         "accentColor": { "type": "color", "label": "Accent color" },
-        "backgroundColor": { "type": "color", "label": "Background color" }
+        "backgroundColor": { "type": "color", "label": "Background color" },
+        "surfaceColor": { "type": "color", "label": "Card background color" },
+        "radius": {
+          "type": "select", "label": "Corner roundness", "default": "medium",
+          "options": [
+            { "label": "Square", "value": "none" },
+            { "label": "Small", "value": "small" },
+            { "label": "Medium", "value": "medium" },
+            { "label": "Large", "value": "large" }
+          ]
+        }
       }
     },
     "Hero": {
       "type": "block", "label": "Hero",
       "fields": {
+        "layout": {
+          "type": "select", "label": "Hero layout", "default": "overlay",
+          "options": [
+            { "label": "Text over the banner", "value": "overlay" },
+            { "label": "Banner on top, text below", "value": "stacked" }
+          ]
+        },
+        "overlayOffsetMobile": { "type": "number", "label": "Space above text on mobile (% of screen width, overlay only)", "min": 0, "max": 80 },
+        "overlayOffsetDesktop": { "type": "number", "label": "Space above text on desktop (% of screen width, overlay only)", "min": 0, "max": 40 },
         "bannerDesktop": { "type": "image", "label": "Banner image – desktop (2000 × 860)", "accept": "image/png,image/jpeg,image/webp" },
         "bannerMobile": { "type": "image", "label": "Banner image – mobile (860 × 1300)", "accept": "image/png,image/jpeg,image/webp" },
         "logo": { "type": "image", "label": "Logo", "accept": "image/png,image/jpeg,image/webp,image/svg+xml" },

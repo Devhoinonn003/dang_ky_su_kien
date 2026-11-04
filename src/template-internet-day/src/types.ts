@@ -109,8 +109,17 @@ export interface RegistrationContent {
     primaryColor: string
     accentColor: string
     backgroundColor: string
+    /** Background of cards (form, summary, confirmation). */
+    surfaceColor: string
+    /** One of RADIUS_PRESETS in config.ts. */
+    radius: string
   }
   Hero: {
+    /** One of HERO_LAYOUTS in config.ts: text over the banner, or banner then text. */
+    layout: string
+    /** Overlay layout only: space kept above the text, in % of screen width. */
+    overlayOffsetMobile: number
+    overlayOffsetDesktop: number
     bannerDesktop: string
     bannerMobile: string
     logo: string
