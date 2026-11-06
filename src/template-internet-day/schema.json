@@ -18,7 +18,9 @@
       "accentColor": "#0ea5e9",
       "backgroundColor": "#071c33",
       "surfaceColor": "#ffffff",
-      "radius": "medium"
+      "headingFromColor": "#ccfed9",
+      "headingToColor": "#b4ddfe",
+      "radius": "pill"
     },
     "Hero": {
       "layout": "overlay",
@@ -47,6 +49,16 @@
       { "time": "16:30", "label": { "vi": "Bế mạc", "en": "Closing" } }
     ],
     "Form": {
+      "backgroundDesktop": "/images/form-bg-desktop.jpg",
+      "backgroundMobile": "/images/form-bg-mobile.jpg",
+      "showAttendanceSessions": true,
+      "attendanceSessions": [
+        { "code": "FULL", "startsRow": false, "label": { "vi": "Cả ngày", "en": "Full day" } },
+        { "code": "AM", "startsRow": false, "label": { "vi": "Phiên sáng", "en": "Morning session" } },
+        { "code": "PM1", "startsRow": true, "label": { "vi": "Phiên chiều 1", "en": "Afternoon session 1" } },
+        { "code": "PM2", "startsRow": false, "label": { "vi": "Phiên chiều 2", "en": "Afternoon session 2" } },
+        { "code": "PM3", "startsRow": false, "label": { "vi": "Phiên chiều 3", "en": "Afternoon session 3" } }
+      ],
       "showDiscount": true,
       "showCompany": true,
       "showPosition": true,
@@ -89,14 +101,17 @@
         "primaryColor": { "type": "color", "label": "Primary color (buttons, highlights)" },
         "accentColor": { "type": "color", "label": "Accent color" },
         "backgroundColor": { "type": "color", "label": "Background color" },
-        "surfaceColor": { "type": "color", "label": "Card background color" },
+        "surfaceColor": { "type": "color", "label": "Card and input background color" },
+        "headingFromColor": { "type": "color", "label": "Form title gradient – start color" },
+        "headingToColor": { "type": "color", "label": "Form title gradient – end color" },
         "radius": {
-          "type": "select", "label": "Corner roundness", "default": "medium",
+          "type": "select", "label": "Corner roundness", "default": "pill",
           "options": [
             { "label": "Square", "value": "none" },
             { "label": "Small", "value": "small" },
             { "label": "Medium", "value": "medium" },
-            { "label": "Large", "value": "large" }
+            { "label": "Large", "value": "large" },
+            { "label": "Pill (rounded inputs)", "value": "pill" }
           ]
         }
       }
@@ -145,6 +160,19 @@
     "Form": {
       "type": "block", "label": "Registration form",
       "fields": {
+        "backgroundDesktop": { "type": "image", "label": "Form background – desktop (2400 × 1032)", "accept": "image/png,image/jpeg,image/webp" },
+        "backgroundMobile": { "type": "image", "label": "Form background – mobile (1080 × 1630)", "accept": "image/png,image/jpeg,image/webp" },
+        "showAttendanceSessions": { "type": "toggle", "label": "Show attendance session choice (display only, not sent)" },
+        "attendanceSessions": {
+          "type": "repeater", "label": "Attendance sessions",
+          "fields": {
+            "code": { "type": "text", "label": "Code", "maxLength": 30 },
+            "startsRow": { "type": "toggle", "label": "Start a new row" },
+            "label": { "type": "block", "label": "Label", "fields": {
+              "vi": { "type": "text", "label": "Vietnamese", "maxLength": 60 },
+              "en": { "type": "text", "label": "English", "maxLength": 60 } } }
+          }
+        },
         "showDiscount": { "type": "toggle", "label": "Show discount code field" },
         "showCompany": { "type": "toggle", "label": "Show company field" },
         "showPosition": { "type": "toggle", "label": "Show job title field" },

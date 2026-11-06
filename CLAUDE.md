@@ -62,6 +62,13 @@ node scripts/screenshots.mjs http://localhost:5173/   # chụp lại docs/*.png 
   - Component **chỉ** dùng các biến này, không dùng `bg-white`, `slate-*`, `red-*` hay `rounded-xl`.
   - Các biến chính: `--er-surface`, `--er-on-surface`, `--er-muted`, `--er-border`, `--er-subtle`, `--er-ink`, `--er-primary-text`, `--er-radius`, `--er-radius-card`.
   - Màu trạng thái có dạng `--er-{danger|success|info|warning}` cùng các biến `-bg` và `-border`.
+  - Biến bổ sung cho phong cách Swiss: `--er-primary-hover`, `--er-accent-text` (accent đọc được trên nền trang), `--er-ring` (viền focus đặc, đọc được trên thẻ).
+  - Form đăng ký dựng y theo mẫu `../background/Form đăng ký ID2026.pdf`: form nằm thẳng trên ảnh nền `Form.backgroundDesktop/Mobile` (xuất từ PDF, đã xoá phần form). `<main>` nhận `buildPanelStyle()`, hàm này gán lại `--er-surface`/`--er-on-surface`/... theo màu nền, nên chữ trên ảnh tối đọc được. Màn xác nhận dùng class `panel` cũng với các biến này.
+  - Ô nhập luôn dùng `--er-field`, `--er-on-field`, `--er-field-muted`, `--er-field-edge` (lấy từ `surfaceColor`) để giữ màu trắng. Tiêu đề và nút Gửi dùng `--er-heading-from`/`--er-heading-to` (lấy từ `Theme.headingFromColor/ToColor`). Ô nhập và nút bo theo `--er-radius-field` (preset `pill` là bo tròn hẳn).
+  - Tỉ lệ cột lấy từ số đo trong PDF, nằm trong `formRow`, `formWide`, `formText` ở `src/lib/ui.ts`. Thứ tự các khối như mẫu: ô nhập, mã ưu đãi, chọn vé, chọn ngày, điều khoản, tóm tắt. `fieldOrder()` trong `formFields.ts` theo đúng thứ tự này.
+  - Nhóm "Phiên tham dự" (`Form.attendanceSessions`) **chỉ để hiển thị** theo yêu cầu người dùng: giữ trong state riêng `attendanceSession` ở `App.tsx`, không validate, không gửi lên `register()`.
+  - Vite đôi khi không nhận file bị ghi đè bằng shell (`mv`); trang trắng với lỗi "X is not defined" thì `touch` lại file.
+- **`src/lib/ui.ts`:** chuỗi class dùng chung (focus ring, card phẳng, nút, ô nhập, badge, notice). Không bóng đổ; viền mảnh; focus là outline 2px.
 - **`src/App.tsx`:** chỉ ghép các phần. Mảng `sections` có cờ `visible`, số bước được đánh tự động.
   - `submittingRef` chặn gọi `register` hai lần.
   - Validate kiểm tra cả vé hay ngày đã chọn có còn hợp lệ không, qua `selectableTickets` và `sessionCodes`.

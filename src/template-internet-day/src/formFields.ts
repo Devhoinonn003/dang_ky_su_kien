@@ -43,8 +43,6 @@ export interface AttendeeFieldDef {
   placeholder: TextKey
   hint?: TextKey
   required: boolean
-  /** Spans the full row on wide screens. */
-  wide?: boolean
   /** Visibility controlled by the organizer in the editor. */
   isVisible?: (form: RegistrationContent['Form']) => boolean
   /** Returns an i18n key describing how to fix the value, or undefined when valid. */
@@ -65,7 +63,6 @@ export const ATTENDEE_FIELDS: AttendeeFieldDef[] = [
     label: 'fullName',
     placeholder: 'fullNamePlaceholder',
     required: true,
-    wide: true,
     validate: (v) => (v.trim() ? undefined : 'errFullName'),
     issuerKey: 'order_issuer_display_name',
     holderKey: 'display_name',
@@ -172,7 +169,7 @@ export function validateField(key: FieldKey, values: FormValues, ctx: Validation
 
 /** Fields in on-screen order; the first invalid one receives focus. */
 export function fieldOrder(ctx: ValidationContext): FieldKey[] {
-  return ['ticketCode', 'sessionCode', ...ctx.fields.map((f) => f.key), 'agreed']
+  return [...ctx.fields.map((f) => f.key), 'ticketCode', 'sessionCode', 'agreed']
 }
 
 export function validateForm(values: FormValues, ctx: ValidationContext): FormErrors {

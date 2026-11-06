@@ -3,6 +3,7 @@ import { ArrowDown, CalendarDays, MapPin } from 'lucide-react'
 import type { HeroLayout } from '../config'
 import type { Dictionary } from '../i18n'
 import { localize } from '../lib/content'
+import { buttonPrimary, eyebrow, focusRingOnBg } from '../lib/ui'
 import type { Language, RegistrationContent } from '../types'
 
 interface EventIntroProps {
@@ -78,16 +79,17 @@ export function EventIntro({ content, language, t, fallbackTitle, formAnchorId, 
       >
         <div className="max-w-xl">
           {tagline && (
-            <p className="mb-3 inline-flex rounded-full border border-current/25 bg-current/10 px-3 py-1 text-xs font-semibold tracking-wide uppercase backdrop-blur-sm sm:text-sm">
+            <p className={`mb-4 flex items-center gap-3 ${eyebrow}`}>
+              <span aria-hidden="true" className="h-0.5 w-8 bg-current" />
               {tagline}
             </p>
           )}
-          <h1 className="text-4xl leading-tight font-extrabold tracking-tight [text-shadow:0_2px_16px_rgb(0_0_0/0.35)] sm:text-5xl lg:text-6xl">
+          <h1 className="text-4xl leading-[1.05] font-bold tracking-tighter [text-shadow:0_2px_16px_rgb(0_0_0/0.35)] sm:text-5xl lg:text-6xl">
             {title}
           </h1>
 
           {(time || location) && (
-            <dl className="mt-6 grid gap-3">
+            <dl className="mt-8 grid gap-3 border-t border-current/30 pt-5">
               {[
                 { value: time, label: t.timeLabel, Icon: CalendarDays },
                 { value: location, label: t.venueLabel, Icon: MapPin },
@@ -95,11 +97,11 @@ export function EventIntro({ content, language, t, fallbackTitle, formAnchorId, 
                 .filter((row) => row.value)
                 .map(({ value, label, Icon }) => (
                   <div key={label} className="flex items-start gap-3">
-                    <dt className="mt-0.5 rounded-(--er-radius) bg-current/15 p-2">
+                    <dt className="mt-0.5 shrink-0">
                       <Icon className="size-5" aria-hidden="true" />
                       <span className="sr-only">{label}</span>
                     </dt>
-                    <dd className="pt-1.5 text-base font-semibold sm:text-lg">{value}</dd>
+                    <dd className="text-base font-semibold sm:text-lg">{value}</dd>
                   </div>
                 ))}
             </dl>
@@ -111,7 +113,7 @@ export function EventIntro({ content, language, t, fallbackTitle, formAnchorId, 
             {showCta && (
               <a
                 href={`#${formAnchorId}`}
-                className="inline-flex min-h-12 items-center gap-2 rounded-(--er-radius) bg-(--er-primary) px-6 text-base font-bold text-(--er-on-primary) shadow-lg shadow-black/25 transition hover:brightness-110 focus:outline-none focus-visible:ring-4 focus-visible:ring-(--er-ring)"
+                className={`${buttonPrimary} ${focusRingOnBg}`}
               >
                 {t.registerNow}
                 <ArrowDown className="size-5" aria-hidden="true" />
@@ -123,7 +125,7 @@ export function EventIntro({ content, language, t, fallbackTitle, formAnchorId, 
                   <img
                     src={hero.logo}
                     alt={organizerName || t.organizer}
-                    className="h-9 w-auto max-w-40 rounded-md object-contain"
+                    className="h-9 w-auto max-w-40 object-contain"
                     onError={() => setLogoFailed(true)}
                   />
                 )}

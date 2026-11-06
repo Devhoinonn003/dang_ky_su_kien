@@ -31,6 +31,18 @@ export function formatDate(iso: string | undefined, language: Language): string 
   }).format(t)
 }
 
+/** Compact date for narrow option labels, e.g. "Th 5, 10/12/2026". */
+export function formatShortDate(iso: string | undefined, language: Language): string {
+  const t = toTime(iso)
+  if (t === null) return ''
+  return new Intl.DateTimeFormat(DATE_LOCALES[language], {
+    weekday: 'short',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  }).format(t)
+}
+
 export function formatTimeRange(start: string | undefined, end: string | undefined, language: Language): string {
   const s = toTime(start)
   if (s === null) return ''

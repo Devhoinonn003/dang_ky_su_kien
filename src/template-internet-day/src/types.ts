@@ -109,8 +109,11 @@ export interface RegistrationContent {
     primaryColor: string
     accentColor: string
     backgroundColor: string
-    /** Background of cards (form, summary, confirmation). */
+    /** Background of inputs and light cards. */
     surfaceColor: string
+    /** Form title gradient, left to right. */
+    headingFromColor: string
+    headingToColor: string
     /** One of RADIUS_PRESETS in config.ts. */
     radius: string
   }
@@ -131,6 +134,12 @@ export interface RegistrationContent {
   }
   Agenda: AgendaItem[]
   Form: {
+    /** Artwork behind the registration form; the form sits on top of it. */
+    backgroundDesktop: string
+    backgroundMobile: string
+    /** "Phiên tham dự" group from the design; display only, the choice is not sent to register(). */
+    showAttendanceSessions: boolean
+    attendanceSessions: { code: string; startsRow: boolean; label: LocalizedText }[]
     showDiscount: boolean
     showCompany: boolean
     showPosition: boolean

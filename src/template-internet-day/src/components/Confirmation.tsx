@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import { COPY_FEEDBACK_MS } from '../config';
 import type { Dictionary } from '../i18n';
 import type { RegistrationResult } from '../types';
+import type { CSSProperties } from 'react';
+import { buttonSecondary, focusRing, notice, panel } from '../lib/ui';
 
 export interface ConfirmationSnapshot {
   fullName: string;
@@ -22,10 +24,12 @@ interface ConfirmationProps {
   data: RegistrationResult;
   snapshot: ConfirmationSnapshot;
   onRegisterAgain: () => void;
+  /** Panel variables from buildPanelStyle(), so the screen matches the dark form panel. */
+  panelStyle: CSSProperties;
 }
 
 /** thank-you screen with ticket code(s), QR image(s) and email notice. */
-export function Confirmation({ t, title, message, logo, logoAlt, data, snapshot, onRegisterAgain }: ConfirmationProps) {
+export function Confirmation({ t, title, message, logo, logoAlt, data, snapshot, onRegisterAgain, panelStyle }: ConfirmationProps) {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const [failedQr, setFailedQr] = useState<Record<number, boolean>>({});
@@ -68,27 +72,30 @@ export function Confirmation({ t, title, message, logo, logoAlt, data, snapshot,
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: 'easeOut' }}
       aria-labelledby="er-confirm-heading"
-      className="mx-auto max-w-3xl overflow-hidden rounded-(--er-radius-card) bg-(--er-surface) text-(--er-on-surface) shadow-2xl shadow-black/30"
+      style={panelStyle}
+      className={`${panel} mx-auto max-w-4xl overflow-hidden`}
     >
-      <div className="bg-(--er-bg) px-5 py-8 text-center text-(--er-on-bg) sm:px-10">
+      <div className="border-b border-(--er-border) px-5 py-10 text-center sm:px-10">
+        {/* Thin brand gradient across the top edge, echoing the form title. */}
+        <div aria-hidden="true" className="-mx-5 -mt-10 mb-10 h-1 bg-linear-to-r from-(--er-heading-from) to-(--er-heading-to) sm:-mx-10" />
         {logo && !logoFailed && (
           <img
             src={logo}
             alt={logoAlt}
-            className="mx-auto mb-5 h-10 w-auto max-w-48 object-contain"
+            className="mx-auto mb-6 h-10 w-auto max-w-48 object-contain"
             onError={() => setLogoFailed(true)}
           />
         )}
-        <CheckCircle2 className="mx-auto size-14 text-(--er-accent)" aria-hidden="true" />
+        <CheckCircle2 className="mx-auto size-14 text-(--er-heading-to)" aria-hidden="true" />
         <h2
           id="er-confirm-heading"
           ref={headingRef}
           tabIndex={-1}
-          className="mt-4 text-2xl font-extrabold focus:outline-none sm:text-3xl"
+          className="mt-4 bg-linear-to-r from-(--er-heading-from) to-(--er-heading-to) bg-clip-text pb-1 text-3xl leading-tight font-extrabold tracking-tight text-transparent focus:outline-none sm:text-4xl"
         >
           {title}
         </h2>
-        {message && <p className="mx-auto mt-3 max-w-xl opacity-90">{message}</p>}
+        {message && <p className="mx-auto mt-3 max-w-xl text-(--er-muted)">{message}</p>}
       </div>
 
       <div className="grid gap-8 px-5 py-8 sm:px-10 md:grid-cols-[1fr_auto]">
@@ -99,13 +106,13 @@ export function Confirmation({ t, title, message, logo, logoAlt, data, snapshot,
               <ul className="mt-2 grid gap-2">
                 {ticketCodes.map((code) => (
                   <li key={code} className="flex flex-wrap items-center gap-3">
-                    <span className="rounded-(--er-radius) border-2 border-dashed border-(--er-border-strong) bg-(--er-subtle) px-4 py-2 font-mono text-2xl font-bold tracking-wider break-all">
+                    <span className="rounded-(--er-radius) border border-(--er-border-strong) bg-(--er-subtle) px-4 py-2 font-mono text-2xl font-bold tracking-wider break-all">
                       {code}
                     </span>
                     <button
                       type="button"
                       onClick={() => copy(code)}
-                      className="inline-flex items-center gap-1.5 rounded-(--er-radius) px-3 py-2 text-sm font-semibold text-(--er-on-surface) hover:bg-(--er-subtle) focus:outline-none focus-visible:ring-4 focus-visible:ring-(--er-ring)"
+                      className={`inline-flex min-h-10 items-center gap-1.5 rounded-(--er-radius) px-3 py-2 text-sm font-semibold text-(--er-on-surface) hover:bg-(--er-subtle) ${focusRing}`}
                     >
                       {copiedCode === code ? (
                         <Check className="size-4" aria-hidden="true" />
@@ -130,7 +137,7 @@ export function Confirmation({ t, title, message, logo, logoAlt, data, snapshot,
             ))}
           </dl>
 
-          <p className="mt-6 flex items-start gap-2 rounded-(--er-radius) bg-(--er-success-bg) p-4 text-sm font-medium text-(--er-success) ring-1 ring-(--er-success-border)">
+          <p className={`mt-6 ${notice} border-(--er-success) bg-(--er-success-bg) font-medium text-(--er-success)`}>
             <Mail className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
             <span className="[overflow-wrap:anywhere]">{t.confirmEmailSent(snapshot.email)}</span>
           </p>
@@ -140,7 +147,8 @@ export function Confirmation({ t, title, message, logo, logoAlt, data, snapshot,
           <div className="flex flex-wrap justify-center gap-4 md:flex-col md:justify-start">
             {qrUrls.map((url, i) =>
               url && !failedQr[i] ? (
-                <figure key={`${url}-${i}`} className="rounded-(--er-radius-card) border border-(--er-border) p-3">
+                // QR codes need a light quiet zone to scan, so the figure keeps the light field color.
+                <figure key={`${url}-${i}`} className="rounded-(--er-radius-card) bg-(--er-field) p-3 text-(--er-on-field)">
                   <img
                     src={url}
                     alt={t.confirmQrAlt(ticketCodes[i] ?? '')}
@@ -150,7 +158,7 @@ export function Confirmation({ t, title, message, logo, logoAlt, data, snapshot,
                     onError={() => setFailedQr((prev) => ({ ...prev, [i]: true }))}
                   />
                   {ticketCodes[i] && (
-                    <figcaption className="mt-2 text-center font-mono text-xs text-(--er-muted)">{ticketCodes[i]}</figcaption>
+                    <figcaption className="mt-2 text-center font-mono text-xs text-(--er-field-muted)">{ticketCodes[i]}</figcaption>
                   )}
                 </figure>
               ) : null,
@@ -163,7 +171,7 @@ export function Confirmation({ t, title, message, logo, logoAlt, data, snapshot,
         <button
           type="button"
           onClick={onRegisterAgain}
-          className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-(--er-radius) border-2 border-(--er-ink) px-6 font-bold text-(--er-ink) transition hover:bg-(--er-subtle) focus:outline-none focus-visible:ring-4 focus-visible:ring-(--er-ring) sm:w-auto"
+          className={`${buttonSecondary} ${focusRing} w-full sm:w-auto`}
         >
           <RotateCcw className="size-5" aria-hidden="true" />
           {t.registerAgain}

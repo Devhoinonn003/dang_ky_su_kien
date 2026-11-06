@@ -112,8 +112,9 @@ Nguyên tắc: nội dung theo sự kiện nằm trong `schema.json`, quy tắc 
 | `Theme.primaryColor` | color | Màu nút và điểm nhấn chính |
 | `Theme.accentColor` | color | Màu nhấn phụ (icon, giờ trong lịch trình) |
 | `Theme.backgroundColor` | color | Màu nền trang |
-| `Theme.surfaceColor` | color | Màu nền các thẻ (form, tóm tắt, màn xác nhận) |
-| `Theme.radius` | select `none` / `small` / `medium` / `large` | Độ bo góc |
+| `Theme.surfaceColor` | color | Màu nền ô nhập và các thẻ sáng |
+| `Theme.headingFromColor` / `Theme.headingToColor` | color | Hai màu chuyển sắc của tiêu đề "Đăng ký tham gia" và nút Gửi |
+| `Theme.radius` | select `none` / `small` / `medium` / `large` / `pill` | Độ bo góc; `pill` bo tròn hẳn ô nhập và nút như mẫu |
 | `Hero.layout` | select `overlay` / `stacked` | Chữ đè lên banner, hoặc banner ở trên và chữ ở dưới |
 | `Hero.overlayOffsetMobile` / `Hero.overlayOffsetDesktop` | number (vw) | Khoảng trống phía trên chữ khi dùng `overlay`, để chữ không đè lên logo trong banner |
 | `Hero.bannerDesktop` / `Hero.bannerMobile` | image | Banner từ 768 px trở lên / dưới 768 px |
@@ -121,6 +122,9 @@ Nguyên tắc: nội dung theo sự kiện nằm trong `schema.json`, quy tắc 
 | `Hero.tagline`, `Hero.title`, `Hero.time`, `Hero.location` | block vi/en | Thông tin sự kiện |
 | `Hero.description` | block vi/en (textarea) | Mô tả ngắn |
 | `Agenda[]` | repeater `{ time, label{vi,en} }` | Lịch trình |
+| `Form.backgroundDesktop` / `Form.backgroundMobile` | image | Ảnh nền phía sau form, từ 768 px trở lên / dưới 768 px. Mép dưới ảnh mờ dần vào màu nền |
+| `Form.showAttendanceSessions` | toggle | Bật/tắt nhóm "Phiên tham dự" (chỉ hiển thị, không gửi đi) |
+| `Form.attendanceSessions[]` | repeater `{ code, startsRow, label{vi,en} }` | Các phiên trong nhóm; `startsRow` để xuống dòng như mẫu (2 phiên rồi 3 phiên) |
 | `Form.showDiscount`, `Form.showCompany`, `Form.showPosition` | toggle | Bật/tắt ô mã ưu đãi, ô công ty, ô chức danh |
 | `Form.termsText` | block vi/en (textarea) | Nội dung ô đồng ý điều khoản |
 | `Form.termsUrl` | url | Link điều khoản đầy đủ, để trống thì ẩn |
@@ -169,3 +173,9 @@ Màn xác nhận ở 360 px: [docs/confirmation-360.png](docs/confirmation-360.p
 3. **Mã ưu đãi với dữ liệu mẫu giảm 0 đ.** Mọi vé trong `serverData.json` đều giá `0.00`, nên `SALE10` giảm 0 đ. Trang demo có thêm lựa chọn *+ paid ticket* (vé Workshop 150.000 đ) để thấy được số tiền giảm. File `serverData.json` vẫn giữ nguyên như đặc tả.
 4. **Nhãn cho vé đã hết hạn bán là tự chọn.** Vé chưa tới giờ mở bán ghi "Chưa mở bán". Vé đã qua `sale_end_time` đang ghi "Đã ngừng bán", vì đặc tả chưa nêu nhãn cho trường hợp này.
 5. **Dữ liệu mẫu sẽ hết hạn bán.** `sale_end_time` trong dữ liệu mẫu là 01/12/2026. Sau ngày này mọi vé đều không chọn được, nên muốn thử luồng đăng ký phải sửa ngày trong `src/mock/serverData.json`.
+6. **Form dựng theo mẫu `background/Form đăng ký ID2026.pdf`, nhưng dữ liệu theo đặc tả.** Ảnh nền form được xuất từ chính file PDF (đã xoá phần chữ và ô nhập). Bố cục, phông chữ (Montserrat, League Spartan) và tỉ lệ cột lấy theo số đo trong PDF. Mẫu có những phần đặc tả không có, và ngược lại:
+   - Mẫu có ô **Vị trí công tác**, **Ngành/lĩnh vực công tác**, **Tham gia với vai trò**. Các ô này chưa làm, vì `RegistrationRequest` trong đặc tả không có trường tương ứng và mẫu cũng chưa có danh sách lựa chọn.
+   - Mẫu có 5 phiên (Cả ngày, Phiên sáng, Phiên chiều 1–3). Trang hiển thị nhóm **Phiên tham dự** này theo cấu hình `Form.attendanceSessions`, nhưng **chỉ để hiển thị**: lựa chọn không bắt buộc và không gửi lên `register()`, vì `RegistrationRequest` không có trường cho nó. Ngày tham dự vẫn lấy từ `serverData` và gửi qua `registered_session` như đặc tả. Cần xác nhận: nếu phiên phải được lưu thì cần bổ sung trường vào đặc tả.
+   - Mẫu không có phần chọn vé, mã ưu đãi, ô đồng ý điều khoản và tóm tắt. Trang vẫn giữ các phần này vì đặc tả bắt buộc, và trình bày cùng kiểu với mẫu.
+   - Chữ trong mẫu điện thoại chỉ khoảng 8 px và ô nhập cao khoảng 16 px. Trang dùng tối thiểu 13 px và ô cao 36 px để đọc và bấm được trên điện thoại.
+7. **Phông chữ tải từ Google Fonts** (`FORM_FONTS` trong `src/config.ts`). Nếu hệ thống thật chặn nguồn ngoài, trang tự dùng phông mặc định.

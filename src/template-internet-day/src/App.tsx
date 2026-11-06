@@ -8,7 +8,9 @@ import { localize, resolveContent } from './lib/content'
 import { formatPrice, parsePrice } from './lib/format'
 import { buildRegistrationRequest } from './lib/request'
 import { describeSession, getTicketStatus, normalizeServerData } from './lib/serverData'
-import { buildThemeStyle } from './lib/theme'
+import { buildPanelStyle, buildThemeStyle } from './lib/theme'
+import { focusRing } from './lib/ui'
+import { FORM_FONTS } from './config'
 import type { Language, RegistrationPageProps, RegistrationResult } from './types'
 import { EventIntro } from './components/EventIntro'
 import { Agenda } from './components/Agenda'
@@ -16,6 +18,8 @@ import { TicketPicker } from './components/TicketPicker'
 import { SessionPicker } from './components/SessionPicker'
 import { AttendeeSection } from './components/AttendeeSection'
 import { DiscountField } from './components/DiscountField'
+import { TermsField } from './components/TermsField'
+import { ChoiceGroup } from './components/ChoiceGroup'
 import { OrderSummary, type SubmitFeedback } from './components/OrderSummary'
 import { Confirmation, type ConfirmationSnapshot } from './components/Confirmation'
 import { SiteFooter } from './components/SiteFooter'
@@ -23,7 +27,7 @@ import { SiteFooter } from './components/SiteFooter'
 interface FormSection {
   id: string
   visible: boolean
-  render: (step: number) => ReactNode
+  render: () => ReactNode
 }
 
 /** Page layout: event intro, agenda, then either the registration form or the confirmation. */
@@ -33,6 +37,7 @@ export default function App({ content, language, serverData, isPreview = false, 
   const data = useMemo(() => resolveContent(content), [content])
   const server = useMemo(() => normalizeServerData(serverData), [serverData])
   const themeStyle = useMemo(() => buildThemeStyle(data.Theme), [data.Theme])
+  const panelStyle = useMemo(() => buildPanelStyle(data.Theme), [data.Theme])
   const { Form: formContent, Confirmation: confirmationContent, Organizer: organizer, Hero: hero } = data
   const formAnchorId = `er-form-${useId().replace(/:/g, '')}`
 
@@ -58,6 +63,8 @@ export default function App({ content, language, serverData, isPreview = false, 
   const submittingRef = useRef(false)
   const [submitting, setSubmitting] = useState(false)
   const [feedback, setFeedback] = useState<SubmitFeedback>({ kind: 'none' })
+  // Display-only choice from the design ("Phiên tham dự"); register() has no field for it.
+  const [attendanceSession, setAttendanceSession] = useState('')
   const [result, setResult] = useState<{ data: RegistrationResult; snapshot: ConfirmationSnapshot } | null>(null)
 
   // Server messages are written in the page language; drop them when it changes.
@@ -163,20 +170,48 @@ export default function App({ content, language, serverData, isPreview = false, 
   const handleRegisterAgain = () => {
     form.reset()
     discount.reset()
+    setAttendanceSession('')
     setFeedback({ kind: 'none' })
     setResult(null)
     scrollToForm()
   }
 
-  /* ---------------- sections (numbered automatically) ---------------- */
+  /* ---------------- sections, in the order of the registration artwork ---------------- */
 
   const sections: FormSection[] = [
     {
+      id: 'attendee',
+      visible: true,
+      render: () => (
+        <AttendeeSection
+          t={t}
+          fields={fields}
+          values={values}
+          errors={form.errors}
+          onChange={setField}
+          onBlur={form.blurField}
+        />
+      ),
+    },
+    {
+      id: 'discount',
+      visible: formContent.showDiscount,
+      render: () => (
+        <DiscountField
+          t={t}
+          code={discount.code}
+          state={discount.state}
+          onCodeChange={discount.setCode}
+          onApply={() => discount.apply(selectedTicket?.ticket_code)}
+          onRemove={discount.reset}
+        />
+      ),
+    },
+    {
       id: 'ticket',
       visible: true,
-      render: (step) => (
+      render: () => (
         <TicketPicker
-          step={step}
           tickets={server.ticketTypes}
           selected={values.ticketCode}
           onSelect={(code) => setField('ticketCode', code)}
@@ -190,9 +225,8 @@ export default function App({ content, language, serverData, isPreview = false, 
     {
       id: 'session',
       visible: server.needsSession,
-      render: (step) => (
+      render: () => (
         <SessionPicker
-          step={step}
           sessions={server.sessions}
           selected={values.sessionCode}
           onSelect={(code) => setField('sessionCode', code)}
@@ -203,39 +237,58 @@ export default function App({ content, language, serverData, isPreview = false, 
       ),
     },
     {
-      id: 'attendee',
-      visible: true,
-      render: (step) => (
-        <AttendeeSection
-          step={step}
-          t={t}
-          fields={fields}
-          values={values}
-          errors={form.errors}
-          termsText={localize(formContent.termsText, lang)}
-          termsUrl={formContent.termsUrl}
-          onChange={setField}
-          onBlur={form.blurField}
+      id: 'attendance',
+      visible: formContent.showAttendanceSessions && formContent.attendanceSessions.length > 0,
+      render: () => (
+        <ChoiceGroup
+          name="er-attendance"
+          title={t.attendancePrompt}
+          mobileColumns={3}
+          options={formContent.attendanceSessions.map((item, index) => ({
+            value: item.code || String(index),
+            label: localize(item.label, lang),
+            startsRow: item.startsRow,
+          }))}
+          selected={attendanceSession}
+          onSelect={setAttendanceSession}
         />
       ),
     },
     {
-      id: 'discount',
-      visible: formContent.showDiscount,
-      render: (step) => (
-        <DiscountField
-          step={step}
+      id: 'terms',
+      visible: true,
+      render: () => (
+        <TermsField
           t={t}
-          code={discount.code}
-          state={discount.state}
-          onCodeChange={discount.setCode}
-          onApply={() => discount.apply(selectedTicket?.ticket_code)}
-          onRemove={discount.reset}
+          checked={values.agreed}
+          text={localize(formContent.termsText, lang)}
+          url={formContent.termsUrl}
+          error={form.errors.agreed && t[form.errors.agreed]}
+          onChange={(checked) => setField('agreed', checked)}
+        />
+      ),
+    },
+    {
+      id: 'summary',
+      visible: true,
+      render: () => (
+        <OrderSummary
+          t={t}
+          ticketName={selectedTicket?.ticket_name ?? ''}
+          sessionLabel={sessionLabel}
+          showSession={server.needsSession}
+          subtotal={subtotal}
+          discountAmount={discountAmount}
+          total={total}
+          submitting={submitting}
+          isPreview={isPreview}
+          feedback={feedback}
         />
       ),
     },
   ]
   const visibleSections = sections.filter((s) => s.visible)
+  const formBackground = formContent.backgroundMobile || formContent.backgroundDesktop
 
   /* ---------------- render ---------------- */
 
@@ -249,7 +302,7 @@ export default function App({ content, language, serverData, isPreview = false, 
         {data.customCSS && <style>{data.customCSS}</style>}
         <a
           href={`#${formAnchorId}`}
-          className="sr-only z-50 rounded-(--er-radius) bg-(--er-surface) px-4 py-2 font-semibold text-(--er-on-surface) focus:not-sr-only focus:absolute focus:top-3 focus:left-3"
+          className={`sr-only z-50 rounded-(--er-radius) bg-(--er-surface) px-4 py-2 font-semibold text-(--er-on-surface) focus:not-sr-only focus:absolute focus:top-3 focus:left-3 ${focusRing}`}
         >
           {t.skipToForm}
         </a>
@@ -264,52 +317,62 @@ export default function App({ content, language, serverData, isPreview = false, 
         />
         <Agenda items={data.Agenda} language={lang} t={t} />
 
-        <main id={formAnchorId} className="mx-auto max-w-6xl scroll-mt-4 px-4 pb-16 sm:px-6">
-          <AnimatePresence mode="wait">
-            {result ? (
-              <Confirmation
-                key="confirmation"
-                t={t}
-                title={localize(confirmationContent.thankYouTitle, lang)}
-                message={localize(confirmationContent.thankYouMessage, lang)}
-                logo={hero.logo}
-                logoAlt={organizerName || t.organizer}
-                data={result.data}
-                snapshot={result.snapshot}
-                onRegisterAgain={handleRegisterAgain}
+        {/* Registration stage: the form sits on the event artwork, laid out like the design mock-up. */}
+        <main
+          id={formAnchorId}
+          style={{ ...panelStyle, fontFamily: FORM_FONTS.body }}
+          className="relative isolate scroll-mt-0"
+        >
+          <link rel="stylesheet" href={FORM_FONTS.stylesheet} precedence="default" />
+          {formBackground && (
+            <picture>
+              {formContent.backgroundDesktop && (
+                <source media="(min-width: 768px)" srcSet={formContent.backgroundDesktop} />
+              )}
+              <img
+                src={formBackground}
+                alt=""
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-auto w-full select-none [mask-image:linear-gradient(to_bottom,black_82%,transparent)]"
               />
-            ) : (
-              <form
-                key="form"
-                ref={formRef}
-                noValidate
-                onSubmit={handleSubmit}
-                className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px]"
-              >
-                <div className="grid gap-8 rounded-(--er-radius-card) bg-(--er-surface) p-5 text-(--er-on-surface) shadow-xl shadow-black/20 ring-1 ring-black/5 sm:p-8">
-                  {visibleSections.map((section, index) => (
-                    <div key={section.id}>{section.render(index + 1)}</div>
-                  ))}
-                </div>
+            </picture>
+          )}
 
-                <div className="lg:sticky lg:top-4">
-                  <OrderSummary
-                    step={visibleSections.length + 1}
+          <div className="pt-[32.5vw] pb-16 md:pt-[4.2vw] md:pb-[6vw]">
+            <AnimatePresence mode="wait">
+              {result ? (
+                <div key="confirmation" className="px-4 sm:px-6">
+                  <Confirmation
                     t={t}
-                    ticketName={selectedTicket?.ticket_name ?? ''}
-                    sessionLabel={sessionLabel}
-                    showSession={server.needsSession}
-                    subtotal={subtotal}
-                    discountAmount={discountAmount}
-                    total={total}
-                    submitting={submitting}
-                    isPreview={isPreview}
-                    feedback={feedback}
+                    title={localize(confirmationContent.thankYouTitle, lang)}
+                    message={localize(confirmationContent.thankYouMessage, lang)}
+                    logo={hero.logo}
+                    logoAlt={organizerName || t.organizer}
+                    data={result.data}
+                    snapshot={result.snapshot}
+                    onRegisterAgain={handleRegisterAgain}
+                    panelStyle={panelStyle}
                   />
                 </div>
-              </form>
-            )}
-          </AnimatePresence>
+              ) : (
+                <form key="form" ref={formRef} noValidate onSubmit={handleSubmit} aria-labelledby="er-form-title">
+                  <h2
+                    id="er-form-title"
+                    style={{ fontFamily: FORM_FONTS.heading }}
+                    className="mb-[7vw] bg-linear-to-r from-(--er-heading-from) to-(--er-heading-to) bg-clip-text px-4 pt-[0.15em] pb-[0.05em] text-center text-[6.4vw] leading-[1.25] font-bold text-transparent uppercase md:mb-[1.6vw] md:text-[2.52vw]"
+                  >
+                    {t.formTitle}
+                  </h2>
+
+                  <div className="grid gap-y-6 md:gap-y-[clamp(18px,1.8vw,28px)]">
+                    {visibleSections.map((section) => (
+                      <div key={section.id}>{section.render()}</div>
+                    ))}
+                  </div>
+                </form>
+              )}
+            </AnimatePresence>
+          </div>
         </main>
 
         <SiteFooter t={t} organizerName={organizerName} email={organizer.contactEmail} hotline={organizer.hotline} />

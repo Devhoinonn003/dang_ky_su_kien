@@ -9,13 +9,13 @@ interface SiteFooterProps {
 }
 
 const linkClass =
-  'inline-flex items-center gap-2 underline-offset-2 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-current'
+  'inline-flex items-center gap-2 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current'
 
 /** Organizer contact; each item is hidden when empty in the editor. */
 export function SiteFooter({ t, organizerName, email, hotline }: SiteFooterProps) {
   if (!organizerName && !email && !hotline) return null
   return (
-    <footer className="border-t border-current/15">
+    <footer className="border-t border-current/25">
       <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-6 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-6">
         {organizerName && (
           <p className="font-semibold">

@@ -11,6 +11,11 @@ const vi = {
   registerNow: 'Đăng ký ngay',
   agenda: 'Lịch trình',
   freeBadge: 'Miễn phí',
+  formTitle: 'Đăng ký tham gia',
+  ticketPrompt: 'Loại vé: Chọn một trong số các lựa chọn sau:',
+  sessionPrompt: 'Ngày tham dự: Chọn một trong số các lựa chọn sau:',
+  attendancePrompt: 'Phiên tham dự: Chọn một trong số các lựa chọn sau:',
+  discountRowLabel: 'Mã ưu đãi',
 
   stepTicket: 'Chọn loại vé',
   stepSession: 'Chọn ngày tham dự',
@@ -99,6 +104,11 @@ const en: Dictionary = {
   registerNow: 'Register now',
   agenda: 'Agenda',
   freeBadge: 'Free',
+  formTitle: 'Register to attend',
+  ticketPrompt: 'Ticket type: choose one of the following:',
+  sessionPrompt: 'Attendance day: choose one of the following:',
+  attendancePrompt: 'Session: choose one of the following:',
+  discountRowLabel: 'Discount code',
 
   stepTicket: 'Choose a ticket',
   stepSession: 'Choose a day',
